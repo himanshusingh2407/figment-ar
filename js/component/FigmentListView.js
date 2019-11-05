@@ -14,7 +14,7 @@ import * as LoadingConstants from '../redux/LoadingStateConstants';
 import { connect } from 'react-redux'
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import {StyleSheet, TouchableHighlight, ActivityIndicator, View, ListView, Image, YellowBox} from 'react-native';
+import { StyleSheet, TouchableHighlight, ActivityIndicator, View, ListView, Image, YellowBox } from 'react-native';
 import renderIf from '../helpers/renderIf';
 import ListViewItem from './ListViewItem';
 
@@ -23,49 +23,49 @@ import ListViewItem from './ListViewItem';
  * in the app. 
  */
 class FigmentListView extends Component {
-    constructor(props) {
-      super(props);
+  constructor(props) {
+    super(props);
 
-      // The app was written before React-Native's Flatlist was ready for prime time
-      // ListView necessitates relying on componentWillReceiveProps, which since updating
-      // react-native dependency to v55.1 has started throwing these warnings
-      YellowBox.ignoreWarnings([
-           'Warning: componentWillUpdate is deprecated',
-           'Warning: componentWillReceiveProps is deprecated',
-      ]);
+    // The app was written before React-Native's Flatlist was ready for prime time
+    // ListView necessitates relying on componentWillReceiveProps, which since updating
+    // react-native dependency to v55.1 has started throwing these warnings
+    YellowBox.ignoreWarnings([
+      'Warning: componentWillUpdate is deprecated',
+      'Warning: componentWillReceiveProps is deprecated',
+    ]);
 
-      this._renderListItem = this._renderListItem.bind(this);
-      this._isSelected = this._isSelected.bind(this);
-      this._onAnimationDone = this._onAnimationDone.bind(this);
-      this._onListItemPressed = this._onListItemPressed.bind(this);
+    this._renderListItem = this._renderListItem.bind(this);
+    this._isSelected = this._isSelected.bind(this);
+    this._onAnimationDone = this._onAnimationDone.bind(this);
+    this._onListItemPressed = this._onListItemPressed.bind(this);
 
-      var ds = new ListView.DataSource({rowHasChanged: (r1, r2) =>  r1 !== r2 });
-      this.state = {
-        rowChanged: 0,
-        dataRows: this.props.items,
-        dataSource: ds.cloneWithRows(this.props.items),
-        selectedItem: -1,
-        animationDone:false
-      }
+    var ds = new ListView.DataSource({ rowHasChanged: (r1, r2) => r1 !== r2 });
+    this.state = {
+      rowChanged: 0,
+      dataRows: this.props.items,
+      dataSource: ds.cloneWithRows(this.props.items),
+      selectedItem: -1,
+      animationDone: false
     }
+  }
 
-    componentWillReceiveProps(nextProps) {
-      var newRows = nextProps.items.slice(0);
-      newRows[this.state.rowChanged] = {
-          ...nextProps.items[this.state.rowChanged],
-      };
+  componentWillReceiveProps(nextProps) {
+    var newRows = nextProps.items.slice(0);
+    newRows[this.state.rowChanged] = {
+      ...nextProps.items[this.state.rowChanged],
+    };
 
-      this.setState({
-        dataSource: this.state.dataSource.cloneWithRows(newRows),
-        dataRows: newRows
-      });
+    this.setState({
+      dataSource: this.state.dataSource.cloneWithRows(newRows),
+      dataRows: newRows
+    });
+  }
+
+  render() {
+    if (this.state.dataSource == undefined) {
+      return (<View />);
     }
-
-    render(){
-      if(this.state.dataSource == undefined) {
-          return (<View/>);
-      }
-      return (
+    return (
       <ListView
         horizontal={true}
         contentContainerStyle={styles.listViewContainer}
@@ -75,53 +75,55 @@ class FigmentListView extends Component {
         showsHorizontalScrollIndicator={false}
         pageSize={5}
         directionalLockEnabled={true}
-        removeClippedSubviews={false}/>);
-    }
+        removeClippedSubviews={false} />);
+  }
 
-    _renderListItem(data, sectionid, rowId) {
-        return (
-          <View style={{marginLeft: 10}}>
-              <ListViewItem onPress={this._onListItemPressed(rowId)} 
-                    key={data.icon_img + this.props.currentSelectedEffect}
-                    stateImageArray={[data.icon_img]}
-                    style={styles.photo}
-                    animationDoneCallBack = {this._onAnimationDone}/>
-                {renderIf(data.loading == LoadingConstants.LOADING,
-                    <ActivityIndicator style={{position:'absolute', marginLeft: 12, marginTop: 19, }} animating={true} size='large'/>
-                )}
-                
-                {renderIf(this._isSelected(data, rowId),
-                  <Image source={require("../res/icon_effects_selected_pink.png")} style={styles.photoSelection} />
-                )}
-          </View>                    
-        );
-    }
+  _renderListItem(data, sectionid, rowId) {
+    console.log(data);
+    return (
+      <View style={{ marginLeft: 10 }}>
+        <ListViewItem onPress={this._onListItemPressed(rowId)}
+          key={data.icon_img + this.props.currentSelectedEffect}
+          stateImageArray={[data.icon_img]}
+          stateDataText={[data.text_data]}
+          style={styles.photo}
+          animationDoneCallBack={this._onAnimationDone} />
+        {renderIf(data.loading == LoadingConstants.LOADING,
+          <ActivityIndicator style={{ position: 'absolute', marginLeft: 12, marginTop: 19, }} animating={true} size='large' />
+        )}
 
-    // Check if given rowId in the listView is selected, used to render the pink border around chosen effect
-    _isSelected(data, rowId) {
-      return (this.props.listMode == UIConstants.LIST_MODE_EFFECT 
-        && this.state.animationDone
-        && this.state.selectedItem == rowId);
-    }
+        {renderIf(this._isSelected(data, rowId),
+          <Image source={require("../res/icon_effects_selected_pink.png")} style={styles.photoSelection} />
+        )}
+      </View>
+    );
+  }
 
-    // Called when animation on the listViewItem is done
-    _onAnimationDone() {
+  // Check if given rowId in the listView is selected, used to render the pink border around chosen effect
+  _isSelected(data, rowId) {
+    return (this.props.listMode == UIConstants.LIST_MODE_EFFECT
+      && this.state.animationDone
+      && this.state.selectedItem == rowId);
+  }
+
+  // Called when animation on the listViewItem is done
+  _onAnimationDone() {
+    this.setState({
+      animationDone: true,
+    })
+  }
+
+  _onListItemPressed(rowId) {
+    let selectedItem = this.props.listMode == UIConstants.LIST_MODE_EFFECT ? rowId : this.state.selectedItem;
+
+    return () => {
       this.setState({
-        animationDone:true,
-      })
+        rowChanged: parseInt(rowId),
+        selectedItem: selectedItem,
+      });
+      this.props.onPress(rowId);
     }
-
-    _onListItemPressed(rowId) {
-        let selectedItem = this.props.listMode == UIConstants.LIST_MODE_EFFECT ? rowId : this.state.selectedItem;
-        
-        return () => {
-          this.setState({
-             rowChanged: parseInt(rowId),
-             selectedItem: selectedItem,
-          });
-          this.props.onPress(rowId);
-        }
-    }
+  }
 };
 
 FigmentListView.propTypes = {
@@ -137,7 +139,7 @@ function selectProps(store) {
 }
 var styles = StyleSheet.create({
   listViewContainer: {
-      height:72,
+    height: 72,
   },
   photo: {
     height: 53,
@@ -155,9 +157,9 @@ var styles = StyleSheet.create({
     marginTop: 10,
   },
   submitText: {
-    color:'#fff',
-    textAlign:'center',
-    fontSize : 20
+    color: '#fff',
+    textAlign: 'center',
+    fontSize: 20
   }
 });
 

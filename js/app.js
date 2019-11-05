@@ -671,7 +671,7 @@ export class App extends Component {
   _constructListArrayModel(sourceArray, items) {
     var listArrayModel = [];
     for (var i = 0; i < sourceArray.length; i++) {
-      listArrayModel.push({ icon_img: sourceArray[i].icon_img, loading: this._getLoadingforModelIndex(i, items) })
+      listArrayModel.push({ icon_img: sourceArray[i].icon_img, loading: this._getLoadingforModelIndex(i, items), text_data: sourceArray[i].text_data })
     }
     return listArrayModel;
   }

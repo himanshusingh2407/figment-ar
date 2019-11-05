@@ -11,13 +11,15 @@
 
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import {StyleSheet,
-        TouchableHighlight,
-        Animated,
-        Easing,
-        Image,
-        View,
-        } from 'react-native';
+import {
+  StyleSheet,
+  TouchableHighlight,
+  Animated,
+  Easing,
+  Image,
+  View,
+  Text
+} from 'react-native';
 import renderIf from '../helpers/renderIf';
 
 /**
@@ -41,22 +43,24 @@ class ListViewItem extends Component {
     });
 
     this.state = {
-      showSelection:false,
+      showSelection: false,
     };
-  }  
+  }
   render() {
     return (
       <TouchableHighlight underlayColor="#00000000" onPress={this._onPress}>
         <View>
-          <Animated.Image 
-              source={this.props.stateImageArray[0]}
-              style={[this.props.style,
-                        {
-                          transform:[
-                            {scale: this.buttonScale}
-                          ]
-                        }
-                    ]} />
+          <Text style={{ color: 'white' }}>{this.props.stateDataText || "Hello"}</Text>
+          <Animated.Image
+            source={this.props.stateImageArray[0]}
+            style={[this.props.style,
+            {
+              transform: [
+                { scale: this.buttonScale }
+              ]
+            }
+            ]} />
+          <Text>Hello</Text>
         </View>
       </TouchableHighlight>
     );
@@ -67,29 +71,29 @@ class ListViewItem extends Component {
 
     // from https://facebook.github.io/react-native/docs/performance.html#my-touchablex-view-isn-t-very-responsive
     requestAnimationFrame(() => {
-      this.props.onPress();   
+      this.props.onPress();
     });
   }
   scale() {
     this.scaleValue.setValue(0);
     Animated.timing(
-        this.scaleValue,
-        {
-          toValue: 1,
-          duration: 300,
-          easing: Easing.easeInOutBack,
-          useNativeDriver: true,
-        }
+      this.scaleValue,
+      {
+        toValue: 1,
+        duration: 300,
+        easing: Easing.easeInOutBack,
+        useNativeDriver: true,
+      }
     ).start(this.props.animationDoneCallBack());
   }
 }
 
 ListViewItem.propTypes = {
-        onPress: PropTypes.func.isRequired,
-        stateImageArray: PropTypes.array.isRequired,
-        style: PropTypes.any,
-        selected: PropTypes.bool,
-        animationDoneCallBack: PropTypes.func,
+  onPress: PropTypes.func.isRequired,
+  stateImageArray: PropTypes.array.isRequired,
+  style: PropTypes.any,
+  selected: PropTypes.bool,
+  animationDoneCallBack: PropTypes.func,
 };
 
 export default ListViewItem;
